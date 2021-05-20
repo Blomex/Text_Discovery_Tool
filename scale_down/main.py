@@ -37,7 +37,7 @@ def resize_and_process_image(data, context):
     image = Image.open(io.BytesIO(blob_bytes))
     print("Trying to resize image")
     resized_image = resize_image(image)
-    resized_image.save(filename=temp_local_filename)
+    resized_image.save(fp=temp_local_filename)
     print("Image resized")
 
     #Upload result to second bucket
