@@ -1,9 +1,7 @@
 import os
-from google.cloud import storage, vision
+from google.cloud import storage
 import tempfile
 from PIL import Image
-import PIL
-import glob
 import io
 
 storage_client = storage.Client()
