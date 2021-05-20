@@ -27,7 +27,8 @@ def resize_image(image: Image) -> Image:
 def resize_and_process_image(data, context):
     file_name = data["name"]
     bucket_name = data["bucket"]
-    _, temp_local_filename = tempfile.mkstemp()
+    _, temp_local_filename = tempfile.mkstemp(suffix=file_name)
+    print(f"temp_local_filename: {temp_local_filename}")
     blob = storage_client.bucket(bucket_name).get_blob(file_name)
     blob_uri = f"gs://{bucket_name}/{file_name}"
     print(f"blob uri: {blob_uri}")
