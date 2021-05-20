@@ -30,14 +30,22 @@ def resize_and_process_image(data, context):
     _, temp_local_filename = tempfile.mkstemp()
     blob = storage_client.bucket(bucket_name).get_blob(file_name)
     blob_uri = f"gs://{bucket_name}/{file_name}"
-    image = Image.open(io.BytesIO(blob.download_as_bytes()))
-    resized_image = resize_image(image)
+    print(f"blob uri: {blob_uri}")
+    blob_bytes = blob.download_as_bytes()
+    print(f"blob bytes: {blob_bytes}")
 
+    image = Image.open(io.BytesIO(blob_bytes))
+    print("Trying to resize image")
+    resized_image = resize_image(image)
+    print("Image resized")
 
     #Upload result to second bucket
+    print("Trying to upload resized image to second bucket")
     second_bucket_name = os.getenv("SECOND_BUCKET_NAME")
     second_bucket = storage_client.bucket(second_bucket_name)
+    print("second bucket found")
     new_blob = second_bucket.blob(file_name)
+    print("created new blob")
     new_blob.upload_from_filename(temp_local_filename)
-
+    print("uploaded from file")
     os.remove(temp_local_filename)
