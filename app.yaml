@@ -1,11 +1,11 @@
 runtime: python39
 
 include:
-  env_variables.yaml
+- env_variables.yaml
 
 handlers:
-- url: /static
-  script: auto
-
+  
 - url: /.*
-  static_dir: auto
+  secure: always
+  redirect_http_response-code: 301
+  script: auto
