@@ -10,6 +10,8 @@ import json
 def discover_text(data, context):
     file_name = data["name"]
     bucket_name = data["bucket"]
+    metadata = data["metadata"]
+    email = metadata.get("email")
     _, temp_local_filename = tempfile.mkstemp()
     blob = storage_client.bucket(bucket_name).get_blob(file_name)
 
@@ -23,7 +25,7 @@ def discover_text(data, context):
     ds = datastore.Client()
     entity = datastore.Entity(key=ds.key('text_from_images'))
     entity.update({
-        'email':
+        'email': email,
         'file_name': file_name,
         'text_found': text,
     })

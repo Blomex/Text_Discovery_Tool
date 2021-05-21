@@ -1,5 +1,5 @@
 import json, os
-
+from flask_wtf.csrf import CSRFProtect
 # MIT License
 #
 # Copyright (c) 2018 Real Python
@@ -22,8 +22,8 @@ import json, os
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from flask import redirect, request, url_for, Flask
-from datastore_entity  import DatastoreEntity, EntityValue
+from flask import redirect, request, url_for, Flask, render_template
+from google.cloud import storage
 from flask_login import (
     LoginManager,
     current_user,
@@ -34,6 +34,8 @@ from flask_login import (
 )
 from oauthlib.oauth2 import WebApplicationClient
 import requests
+
+#storage_client = storage.Client()
 
 users = {}
 
@@ -55,7 +57,8 @@ GOOGLE_DISCOVERY_URL = (
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
-
+csrf = CSRFProtect()
+csrf.init_app(app)
 # User session management setup
 # https://flask-login.readthedocs.io/en/latest
 login_manager = LoginManager()
@@ -77,13 +80,7 @@ client = WebApplicationClient(GOOGLE_CLIENT_ID)
 @app.route("/")
 def index():
     if current_user.is_authenticated:
-        return (
-            "<p>Hello, {}! You're logged in! Email: {}</p>"
-            "<div><p>Google Profile Picture:</p>"
-            '<a class="button" href="/logout">Logout</a>'.format(
-                current_user.id, current_user.email
-            )
-        )
+        return render_template("index.html", current_user=current_user)
     else:
         return '<a class="button" href="/login">Google Login</a>'
 
@@ -164,6 +161,12 @@ def callback():
     # Send user back to homepage
     return redirect(url_for("index"))
 
+@app.route("/upload", methods=['POST'])
+@login_required
+def upload():
+    #TODO upload file, return success/failure
+    print(f"upload button clicked with form {request.form}")
+    pass
 
 @app.route("/logout")
 @login_required

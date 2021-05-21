@@ -1,0 +1,12 @@
+runtime: python39
+
+env_variables:
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
+handlers:
+- url: /static
+  script: static
+
+- url: /.*
+  static_dir: auto

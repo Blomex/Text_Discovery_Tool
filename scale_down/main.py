@@ -25,6 +25,12 @@ def resize_image(image: Image) -> Image:
 
 
 def resize_and_process_image(data, context):
+    """
+    cloud function, which retrieves image from given bucket, resizes it, and saves it to second bucket
+    :param data:
+    :param context:
+    :return:
+    """
     file_name = data["name"]
     bucket_name = data["bucket"]
     _, temp_local_filename = tempfile.mkstemp(suffix=file_name)
