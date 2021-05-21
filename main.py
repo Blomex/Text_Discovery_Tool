@@ -21,9 +21,8 @@ from flask_wtf.csrf import CSRFProtect
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from flask import redirect, request, url_for, Flask, render_template
 from google.cloud import storage
+from flask import redirect, request, url_for, Flask, render_template
 from flask_login import (
     LoginManager,
     current_user,
@@ -34,7 +33,8 @@ from flask_login import (
 )
 from oauthlib.oauth2 import WebApplicationClient
 import requests
-
+import google.auth
+credentials, project = google.auth.default()
 #storage_client = storage.Client()
 
 users = {}
@@ -51,18 +51,23 @@ class User(UserMixin):
         users[user_id] = user
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
+UPLOAD_BUCKET = os.environ.get("UPLOAD_BUCKET", None)
 GOOGLE_DISCOVERY_URL = (
     "https://accounts.google.com/.well-known/openid-configuration"
 )
-
 app = Flask(__name__)
+login_manager = LoginManager()
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 csrf = CSRFProtect()
 csrf.init_app(app)
 # User session management setup
 # https://flask-login.readthedocs.io/en/latest
-login_manager = LoginManager()
 login_manager.init_app(app)
+app.config.update(
+    GOOGLE_STORAGE_LOCAL_DEST = app.instance_path,
+    GOOGLE_STORAGE_FILES_BUCKET=UPLOAD_BUCKET
+)
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -164,8 +169,25 @@ def callback():
 @app.route("/upload", methods=['POST'])
 @login_required
 def upload():
-    #TODO upload file, return success/failure
+    # retrieve data from form
+    email = request.form['email']
+    image = request.files['filename']
+    filename = request.files['filename'].filename
+    # create client that will connect to bucket
+    client = storage.Client()
+    bucket = client.get_bucket(UPLOAD_BUCKET)
+    # create blob in the bucket
+    blob = bucket.blob(filename)
+    print(blob)
+    # add user email inside metadata
+    blob.metadata = {'email': email}
+    blob.upload_from_file(image)
+    blob.reload()
+    hash = blob.md5_hash
+    print(f"blob metadata: {blob.metadata}")
+    print(f"blob hash is {hash}")
     print(f"upload button clicked with form {request.form}")
+
     pass
 
 @app.route("/logout")

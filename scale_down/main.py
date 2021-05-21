@@ -53,6 +53,7 @@ def resize_and_process_image(data, context):
     second_bucket = storage_client.bucket(second_bucket_name)
     print("second bucket found")
     new_blob = second_bucket.blob(file_name)
+    new_blob.metadata = blob.metadata
     print("created new blob")
     new_blob.upload_from_filename(temp_local_filename)
     print("uploaded from file")

@@ -8,7 +8,7 @@
     <p>Welcome, {{ current_user.id }}! You're logged in! Email: {{ current_user.email }}</p>
     <a class="button" href="/logout">Logout</a>
 
-    <form action="/upload" method="POST">
+    <form action="/upload" method="POST" enctype="multipart/form-data">
         <input type="file" id="myFile" name="filename" accept=".jpg,.jpeg,.png" multiple="false">
         <input type="hidden" id="email" name="email" value=" {{current_user.email }}">
         <input type="hidden" name="csrf_token" value="{{csrf_token()}}">
