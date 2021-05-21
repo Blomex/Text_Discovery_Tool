@@ -1,8 +1,7 @@
 runtime: python39
 
-env_variables:
-  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+include:
+  env_variables.yaml
 
 handlers:
 - url: /static
