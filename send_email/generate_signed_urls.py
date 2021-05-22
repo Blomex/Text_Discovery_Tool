@@ -28,7 +28,7 @@ import collections
 import datetime
 import hashlib
 import sys
-
+from google.oauth2 import service_account
 # pip install six
 import six
 from six.moves.urllib.parse import quote
@@ -48,8 +48,11 @@ def generate_signed_url(bucket_name, object_name,
     datetime_now = datetime.datetime.utcnow()
     request_timestamp = datetime_now.strftime('%Y%m%dT%H%M%SZ')
     datestamp = datetime_now.strftime('%Y%m%d')
-    google_credentials, project = google.auth.default()
-    client_email = google_credentials.service_account_email
+    credentials, project = google.auth.default()
+    print(credentials.service_account_email)
+    print(credentials.signer)
+
+    client_email = credentials.service_account_email
     credential_scope = '{}/auto/storage/goog4_request'.format(datestamp)
     credential = '{}/{}'.format(client_email, credential_scope)
 
@@ -107,7 +110,7 @@ def generate_signed_url(bucket_name, object_name,
 
     # signer.sign() signs using RSA-SHA256 with PKCS1v15 padding
     signature = binascii.hexlify(
-        google_credentials.signer.sign(string_to_sign)
+        credentials.signer.sign(string_to_sign)
     ).decode()
 
     scheme_and_host = '{}://{}'.format('https', host)
@@ -118,30 +121,30 @@ def generate_signed_url(bucket_name, object_name,
 # [END storage_signed_url_all]
 
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'service_account_file',
-        help='Path to your Google service account keyfile.')
-    parser.add_argument(
-        'request_method',
-        help='A request method, e.g GET, POST.')
-    parser.add_argument('bucket_name', help='Your Cloud Storage bucket name.')
-    parser.add_argument('object_name', help='Your Cloud Storage object name.')
-    parser.add_argument('expiration', type=int, help='Expiration time.')
-    parser.add_argument(
-        '--subresource',
-        default=None,
-        help='Subresource of the specified resource, e.g. "acl".')
-
-    args = parser.parse_args()
-
-    signed_url = generate_signed_url(
-        service_account_file=args.service_account_file,
-        http_method=args.request_method, bucket_name=args.bucket_name,
-        object_name=args.object_name, subresource=args.subresource,
-        expiration=int(args.expiration))
-
-    print(signed_url)
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser(
+#         description=__doc__,
+#         formatter_class=argparse.RawDescriptionHelpFormatter)
+#     parser.add_argument(
+#         'service_account_file',
+#         help='Path to your Google service account keyfile.')
+#     parser.add_argument(
+#         'request_method',
+#         help='A request method, e.g GET, POST.')
+#     parser.add_argument('bucket_name', help='Your Cloud Storage bucket name.')
+#     parser.add_argument('object_name', help='Your Cloud Storage object name.')
+#     parser.add_argument('expiration', type=int, help='Expiration time.')
+#     parser.add_argument(
+#         '--subresource',
+#         default=None,
+#         help='Subresource of the specified resource, e.g. "acl".')
+#
+#     args = parser.parse_args()
+#
+#     signed_url = generate_signed_url(
+#         service_account_file=args.service_account_file,
+#         http_method=args.request_method, bucket_name=args.bucket_name,
+#         object_name=args.object_name, subresource=args.subresource,
+#         expiration=int(args.expiration))
+#
+#     print(signed_url)
