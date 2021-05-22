@@ -13,9 +13,8 @@ def send_email(event, context):
     discovered_text = data['message']
     FIRST_BUCKET = os.getenv("UPLOAD_BUCKET")
     SECOND_BUCKET = os.getenv("SECOND_BUCKET")
-    SERVICE_ACCOUNT_FILE = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    original_image_url = generate_signed_url(service_account_file=SERVICE_ACCOUNT_FILE, bucket_name=FIRST_BUCKET, object_name=file_name)
-    resized_image_url = generate_signed_url(service_account_file=SERVICE_ACCOUNT_FILE, bucket_name=SECOND_BUCKET, object_name=file_name)
+    original_image_url = generate_signed_url(bucket_name=FIRST_BUCKET, object_name=file_name)
+    resized_image_url = generate_signed_url(bucket_name=SECOND_BUCKET, object_name=file_name)
     message = Mail(
         to_emails = email,
         from_email="b.jedrychowski@student.uw.edu.pl",
@@ -34,5 +33,6 @@ def send_email(event, context):
         print(response)
     except Exception as e:
         print(e.message)
-#event = {"data": "eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19"}
-#send_email(event, None)
+event = {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': None, 'data': 'eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19'}
+
+send_email(event, None)

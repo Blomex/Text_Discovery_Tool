@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# Original file: https://github.com/GoogleCloudPlatform/python-docs-samples/blob/HEAD/storage/signed_urls/generate_signed_urls.py
+
+# Modifications Copyright 2021 Beniamin Jędrychowski
 
 """This application demonstrates how to construct a Signed URL for objects in
    Google Cloud Storage.
 For more information, see the README.md under /storage and the documentation
 at https://cloud.google.com/storage/docs/access-control/signing-urls-manually.
 """
-
+import google.auth
 import argparse
 # [START storage_signed_url_all]
 import binascii
@@ -26,14 +29,12 @@ import datetime
 import hashlib
 import sys
 
-# pip install google-auth
-from google.oauth2 import service_account
 # pip install six
 import six
 from six.moves.urllib.parse import quote
 
 
-def generate_signed_url(service_account_file, bucket_name, object_name,
+def generate_signed_url(bucket_name, object_name,
                         subresource=None, expiration=604800, http_method='GET',
                         query_parameters=None, headers=None):
 
@@ -47,9 +48,7 @@ def generate_signed_url(service_account_file, bucket_name, object_name,
     datetime_now = datetime.datetime.utcnow()
     request_timestamp = datetime_now.strftime('%Y%m%dT%H%M%SZ')
     datestamp = datetime_now.strftime('%Y%m%d')
-
-    google_credentials = service_account.Credentials.from_service_account_file(
-        service_account_file)
+    google_credentials, project = google.auth.default()
     client_email = google_credentials.service_account_email
     credential_scope = '{}/auto/storage/goog4_request'.format(datestamp)
     credential = '{}/{}'.format(client_email, credential_scope)
