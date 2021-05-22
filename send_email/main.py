@@ -1,8 +1,7 @@
-import requests
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email
-__package__='send_email'
-from .generate_signed_urls import generate_signed_url
+from sendgrid.helpers.mail import Mail
+
+from generate_signed_urls import generate_signed_url
 import os
 import google.auth
 credentials, project = google.auth.default()
@@ -33,3 +32,8 @@ def send_email(data, context):
         print(response)
     except Exception as e:
         print(e.message)
+# data = {
+#     'email':'blomex.bloomex@gmail.com',
+#     'file_name':' 20190702-153149-PowerSupply.png',
+#     'message': 'dane',
+# }
