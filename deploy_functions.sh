@@ -14,3 +14,9 @@ gcloud functions deploy discover_text \
 --entry-point=discover_text \
 --set-env-vars PROJECT_ID=gcp-lectures-306513
 
+gcloud functions deploy send_email \
+--source https://source.developers.google.com/projects/gcp-lectures-306513/repos/cloud-functions-project/moveable-aliases/master/paths/send_email \
+--runtime python39 \
+--trigger-topic new_image \
+--entry-point=send_email \
+--env-vars-file .env.yaml
