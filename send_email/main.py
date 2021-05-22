@@ -5,7 +5,8 @@ from generate_signed_urls import generate_signed_url
 import os
 import google.auth
 credentials, project = google.auth.default()
-def send_email(data, context):
+def send_email(event, context):
+    data = event['data']
     email = data['email']
     file_name = data['file_name']
     discovered_text = data['message']
