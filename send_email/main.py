@@ -1,12 +1,13 @@
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-
+import base64
+import json
 from generate_signed_urls import generate_signed_url
 import os
 import google.auth
 credentials, project = google.auth.default()
-def send_email(data, context):
-    print(data)
+def send_email(event, context):
+    data = json.loads(base64.b64decode(event['data']))['data']
     email = data['email']
     file_name = data['file_name']
     discovered_text = data['message']
@@ -33,5 +34,5 @@ def send_email(data, context):
         print(response)
     except Exception as e:
         print(e.message)
-#event = {"data": {"file_name": "pobrane.jpg", "message": "Your design\nADVENTURE\nO Since 2008\n", "email": " blomex.bloomex@gmail.com"}}
+#event = {"data": "eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19"}
 #send_email(event, None)
