@@ -30,17 +30,23 @@ def discover_text(data, context):
         'text_found': text,
     })
     ds.put(entity)
+    publish_pubsub(file_name, text, email)
 
-def publish_pubsub(file_name):
+def publish_pubsub(file_name, text, email):
     topic_name = "new_image"
     publisher = pubsub_v1.PublisherClient()
-    message = file_name
+    message = text
+
     print(f"Publishing message to {topic_name}")
     PROJECT_ID = os.getenv('PROJECT_ID')
     topic_path = publisher.topic_path(PROJECT_ID, topic_name)
 
     message_json = json.dumps({
-        'data': {'message': message}
+        'data': {
+            'file_name': file_name,
+            'message': message,
+            'email': email
+        }
     })
     try:
         publish_result = publisher.publish(topic_path, data=message_json.encode('utf-8'))
