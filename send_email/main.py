@@ -5,8 +5,8 @@ from generate_signed_urls import generate_signed_url
 import os
 import google.auth
 credentials, project = google.auth.default()
-def send_email(event, context):
-    data = event['data']
+def send_email(data, context):
+    print(data)
     email = data['email']
     file_name = data['file_name']
     discovered_text = data['message']
@@ -33,8 +33,5 @@ def send_email(event, context):
         print(response)
     except Exception as e:
         print(e.message)
-# data = {
-#     'email':'blomex.bloomex@gmail.com',
-#     'file_name':' 20190702-153149-PowerSupply.png',
-#     'message': 'dane',
-# }
+#event = {"data": {"file_name": "pobrane.jpg", "message": "Your design\nADVENTURE\nO Since 2008\n", "email": " blomex.bloomex@gmail.com"}}
+#send_email(event, None)
