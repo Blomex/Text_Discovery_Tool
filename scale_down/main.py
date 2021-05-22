@@ -40,8 +40,9 @@ def resize_and_process_image(data, context):
     print(f"blob uri: {blob_uri}")
     blob_bytes = blob.download_as_bytes()
     print(f"blob bytes: {blob_bytes}")
-
-    image = Image.open(io.BytesIO(blob_bytes))
+    output = io.BytesIO(blob_bytes)
+    output.seek(0)
+    image = Image.open(output)
     print("Trying to resize image")
     resized_image = resize_image(image)
     resized_image.save(fp=temp_local_filename)
