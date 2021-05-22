@@ -1,7 +1,8 @@
 import requests
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail, Email
-from send_email.generate_signed_urls import generate_signed_url
+__package__='send_email'
+from .generate_signed_urls import generate_signed_url
 import os
 import google.auth
 credentials, project = google.auth.default()
