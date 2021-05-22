@@ -19,4 +19,5 @@ gcloud functions deploy send_email \
 --runtime python39 \
 --trigger-topic new_image \
 --entry-point=send_email \
---env-vars-file .env.yaml
+--env-vars-file .env.yaml \
+--service-account=gcp-lectures-306513@appspot.gserviceaccount.com

@@ -32,8 +32,9 @@ from google.oauth2 import service_account
 # pip install six
 import six
 from six.moves.urllib.parse import quote
-
-
+from google.auth.transport import requests
+from google.auth import iam
+TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'
 def generate_signed_url(bucket_name, object_name,
                         subresource=None, expiration=604800, http_method='GET',
                         query_parameters=None, headers=None):
@@ -48,11 +49,22 @@ def generate_signed_url(bucket_name, object_name,
     datetime_now = datetime.datetime.utcnow()
     request_timestamp = datetime_now.strftime('%Y%m%dT%H%M%SZ')
     datestamp = datetime_now.strftime('%Y%m%d')
-    credentials, project = google.auth.default()
+    credentials, _project = google.auth.default()
     print(credentials.service_account_email)
-    print(credentials.signer)
+    try:
+        print(credentials.signer)
+        updated_credentials = credentials
+    except AttributeError:
+        request = requests.Request()
+        credentials.refresh(request)
+        signer = iam.Signer(request, credentials, credentials.service_account_email)
+        updated_credentials = service_account.Credentials(
+            signer,
+            credentials.service_account_email,
+            TOKEN_URI,
+        )
 
-    client_email = credentials.service_account_email
+    client_email = updated_credentials.service_account_email
     credential_scope = '{}/auto/storage/goog4_request'.format(datestamp)
     credential = '{}/{}'.format(client_email, credential_scope)
 
@@ -110,7 +122,7 @@ def generate_signed_url(bucket_name, object_name,
 
     # signer.sign() signs using RSA-SHA256 with PKCS1v15 padding
     signature = binascii.hexlify(
-        credentials.signer.sign(string_to_sign)
+        updated_credentials.signer.sign(string_to_sign)
     ).decode()
 
     scheme_and_host = '{}://{}'.format('https', host)
