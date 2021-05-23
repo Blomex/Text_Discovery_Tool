@@ -34,7 +34,7 @@ def discover_text(data: dict, context):
         text += annotations[0].description
 
     ds = datastore.Client()
-    entityIter = iter(ds.query(kind="text_from_images").add_filter("hash", "=", file_name).fetch())
+    entityIter = iter(ds.query(kind="text_from_images").add_filter("file_name_in_bucket", "=", file_name).fetch())
     try:
         entity = entityIter.__next__()
         entity.update({
