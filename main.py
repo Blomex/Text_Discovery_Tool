@@ -173,7 +173,7 @@ def callback():
 def put_entity_to_datastore(b64_hash, email, filename):
     ds = datastore.Client()
     entity = datastore.Entity(key=ds.key('text_from_images'))
-    _, ext = filename.os.path.splitext(filename)
+    _, ext = os.path.splitext(filename)
     entity.update({
         'email': email,
         'file_name': filename,
