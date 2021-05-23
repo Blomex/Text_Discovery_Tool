@@ -7,7 +7,18 @@ storage_client = storage.Client()
 vision_client = vision.ImageAnnotatorClient()
 import json
 
-def discover_text(data, context):
+
+def discover_text(data: dict, context: google.cloud.functions.Context):
+    """
+    Background Cloud Function to be triggered by Cloud Storage.
+    Function discovers text in the image using vision API.
+    :param data: The dictionary with following fields:
+                    name - name of the file, from which we want to discover text
+                    bucket - name of the bucket, where file is located
+                    metadata - dictionary with metadata, has field 'email' - email of uploader.
+    :param context: Metadata of triggering event
+    :return:
+    """
     file_name = data["name"]
     bucket_name = data["bucket"]
     metadata = data["metadata"]

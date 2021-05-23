@@ -21,6 +21,7 @@ from flask_wtf.csrf import CSRFProtect
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import hashlib
 from google.cloud import storage
 from flask import redirect, request, url_for, Flask, render_template
 from flask_login import (
@@ -178,17 +179,22 @@ def upload():
     bucket = client.get_bucket(UPLOAD_BUCKET)
     # create blob in the bucket
     blob = bucket.blob(filename)
+    if blob.exists():
+        print("blob already exists")
+        return redirect(url_for("index"))
+        #blob exists. We will check it's md5 hash. if it is the same, we will not replace the file.
+    print(f"hash of file: {hashlib.md5(image)}")
     print(blob)
     # add user email inside metadata
     blob.metadata = {'email': email}
     blob.upload_from_file(image)
     blob.reload()
+    print(blob)
     hash = blob.md5_hash
     print(f"blob metadata: {blob.metadata}")
     print(f"blob hash is {hash}")
     print(f"upload button clicked with form {request.form}")
-
-    pass
+    return redirect(url_for("index"))
 
 @app.route("/logout")
 @login_required
