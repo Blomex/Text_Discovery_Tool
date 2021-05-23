@@ -34,13 +34,16 @@ def discover_text(data: dict, context: google.cloud.functions.Context):
         text += annotations[0].description
 
     ds = datastore.Client()
-    entity = datastore.Entity(key=ds.key('text_from_images'))
-    entity.update({
-        'email': email,
-        'file_name': file_name,
-        'text_found': text,
-    })
-    ds.put(entity)
+    entityIter = iter(ds.query(kind="text_from_images").add_filter("hash", "=", file_name).fetch())
+    try:
+        entity = entityIter.__next__()
+        entity.update({
+            'text_found': text,
+        })
+        ds.put(entity)
+        print(f"entity {entity} sucesfully updated")
+    except google.api_core.exceptions.FailedPrecondition:
+        print("couldn't add discovered text to entity: no such entity found")
     publish_pubsub(file_name, text, email)
 
 def publish_pubsub(file_name, text, email):

@@ -1,3 +1,4 @@
+import base64
 import json, os
 from flask_wtf.csrf import CSRFProtect
 # MIT License
@@ -23,6 +24,7 @@ from flask_wtf.csrf import CSRFProtect
 # SOFTWARE.
 import hashlib
 from google.cloud import storage
+from google.cloud import datastore
 from flask import redirect, request, url_for, Flask, render_template
 from flask_login import (
     LoginManager,
@@ -167,6 +169,19 @@ def callback():
     # Send user back to homepage
     return redirect(url_for("index"))
 
+
+def put_entity_to_datastore(b64_hash, email, filename):
+    ds = datastore.Client()
+    entity = datastore.Entity(key=ds.key('text_from_images'))
+    entity.update({
+        'email': email,
+        'file_name': filename,
+        'hash': b64_hash,
+    })
+    ds.put(entity)
+    pass
+
+
 @app.route("/upload", methods=['POST'])
 @login_required
 def upload():
@@ -177,31 +192,49 @@ def upload():
     # create client that will connect to bucket
     client = storage.Client()
     bucket = client.get_bucket(UPLOAD_BUCKET)
-    # create blob in the bucket
-    blob = bucket.blob(filename)
-    if blob.exists():
-        print("blob already exists")
-        return redirect(url_for("index"))
-        #blob exists. We will check it's md5 hash. if it is the same, we will not replace the file.
-    print(f"hash of file: {hashlib.md5(image)}")
-    print(blob)
-    # add user email inside metadata
-    blob.metadata = {'email': email}
-    blob.upload_from_file(image)
-    blob.reload()
-    print(blob)
-    hash = blob.md5_hash
-    print(f"blob metadata: {blob.metadata}")
-    print(f"blob hash is {hash}")
-    print(f"upload button clicked with form {request.form}")
-    return redirect(url_for("index"))
+    b64_hash = getMd5(image)
+    sentinel = object()
+    iterEntry = iter(find_in_storage(b64_hash))
+    print(iterEntry)
+    try:
+        entry = iterEntry.__next__()
+        print("There is already item with such md5 hash in the database")
+        return render_template('already_exists.html', entry=entry)
+    except google.api_core.exceptions.FailedPrecondition:
+        blob = bucket.blob(b64_hash)
+        image.seek(0)
+        print(blob)
+        print("adding entry to database")
+        put_entity_to_datastore(b64_hash, email, filename)
+        print("entry added to database")
+        # add user email inside metadata
+        blob.metadata = {'email': email}
+        blob.upload_from_file(image)
+        blob.reload()
+        print("blob uploaded")
+        print(f"blob metadata: {blob.metadata}")
+        print(f"upload button clicked with form {request.form}")
+        return render_template('sucesfully_added.html')
 
+def find_in_storage(b64_hash):
+    ds = datastore.Client()
+    qresult = ds.query(kind="text_from_images").add_filter("hash", "=", b64_hash).fetch()
+    #qresult = ds.query(kind="text_from_images").fetch()
+    return qresult
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
+def getMd5(f):
+    f.seek(0)
+    m = hashlib.md5()
+    line = f.read()
+    m.update(line)
+    md5code = base64.b64encode(m.digest())
+    #md5code = m.hexdigest()
+    return md5code
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
