@@ -42,7 +42,7 @@ def discover_text(data: dict, context):
         })
         ds.put(entity)
         print(f"entity {entity} sucesfully updated")
-    except google.api_core.exceptions.FailedPrecondition:
+    except:
         print("couldn't add discovered text to entity: no such entity found")
     publish_pubsub(file_name, text, email)
 

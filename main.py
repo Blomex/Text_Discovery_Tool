@@ -203,7 +203,7 @@ def upload():
         entry = iterEntry.__next__()
         print("There is already item with such md5 hash in the database")
         return render_template('already_exists.html', entry=entry)
-    except google.api_core.exceptions.FailedPrecondition:
+    except:
         _, ext = os.path.splitext(filename)
         blob = bucket.blob(str(b64_hash) + ext)
         image.seek(0)
