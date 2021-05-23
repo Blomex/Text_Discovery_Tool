@@ -8,7 +8,7 @@ vision_client = vision.ImageAnnotatorClient()
 import json
 
 
-def discover_text(data: dict, context: google.cloud.functions.Context):
+def discover_text(data: dict, context):
     """
     Background Cloud Function to be triggered by Cloud Storage.
     Function discovers text in the image using vision API.
