@@ -232,7 +232,8 @@ def getMd5(f):
     m = hashlib.md5()
     line = f.read()
     m.update(line)
-    md5code = base64.b64encode(m.digest())
+    custom=b"-_"
+    md5code = base64.b64encode(m.digest(), altchars=custom)
     #md5code = m.hexdigest()
     return md5code
 
