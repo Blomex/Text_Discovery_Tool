@@ -54,7 +54,7 @@ def resize_and_process_image(data: dict, context):
 
     #Upload result to second bucket
     print("Trying to upload resized image to second bucket")
-    second_bucket_name = os.getenv("SECOND_BUCKET_NAME")
+    second_bucket_name = os.getenv("SECOND_BUCKET")
     second_bucket = storage_client.bucket(second_bucket_name)
     print("second bucket found")
     new_blob = second_bucket.blob(file_name)

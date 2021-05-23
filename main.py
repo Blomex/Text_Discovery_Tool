@@ -174,11 +174,12 @@ def put_entity_to_datastore(b64_hash, email, filename):
     ds = datastore.Client()
     entity = datastore.Entity(key=ds.key('text_from_images'))
     _, ext = os.path.splitext(filename)
+    print(b64_hash, ext)
     entity.update({
         'email': email,
         'file_name': filename,
         'hash': b64_hash,
-        'file_name_in_bucket': b64_hash + ext
+        'file_name_in_bucket': str(b64_hash) + ext
     })
     ds.put(entity)
     pass
@@ -194,7 +195,7 @@ def upload():
     # create client that will connect to bucket
     client = storage.Client()
     bucket = client.get_bucket(UPLOAD_BUCKET)
-    b64_hash = getMd5(image)
+    b64_hash = getMd5(image).decode()
     sentinel = object()
     iterEntry = iter(find_in_storage(b64_hash))
     print(iterEntry)
@@ -203,7 +204,8 @@ def upload():
         print("There is already item with such md5 hash in the database")
         return render_template('already_exists.html', entry=entry)
     except google.api_core.exceptions.FailedPrecondition:
-        blob = bucket.blob(b64_hash)
+        _, ext = os.path.splitext(filename)
+        blob = bucket.blob(str(b64_hash) + ext)
         image.seek(0)
         print(blob)
         print("adding entry to database")
