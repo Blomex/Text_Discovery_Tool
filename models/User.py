@@ -1,15 +1,13 @@
 from flask_login import UserMixin
-from datastore_entity import DatastoreEntity, EntityValue
+users = {}
 import datetime
-class User(DatastoreEntity, UserMixin):
-    id = EntityValue(None)
-    username = EntityValue(None)
-    password = EntityValue(None)
-    status = EntityValue(1)
+class User(UserMixin):
+    def __init__(self, id_, email):
+        self.id = id_
+        self.email = email
     @staticmethod
     def get(user_id):
         return users.get(user_id)
-
     @staticmethod
     def create(user_id, user):
         users[user_id] = user

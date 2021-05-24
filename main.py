@@ -39,19 +39,7 @@ import requests
 import google.auth
 credentials, project = google.auth.default()
 #storage_client = storage.Client()
-
-users = {}
-
-class User(UserMixin):
-    def __init__(self, id_, email):
-        self.id = id_
-        self.email = email
-    @staticmethod
-    def get(user_id):
-        return users.get(user_id)
-    @staticmethod
-    def create(user_id, user):
-        users[user_id] = user
+from models.User import User
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 UPLOAD_BUCKET = os.environ.get("UPLOAD_BUCKET", None)
@@ -74,8 +62,7 @@ app.config.update(
 
 @login_manager.user_loader
 def load_user(user_id):
-        print(users)
-        return User.get(user_id)
+    return User.get(user_id)
 
 @login_manager.unauthorized_handler
 def unauthorized():
@@ -90,7 +77,7 @@ def index():
     if current_user.is_authenticated:
         return render_template("index.html", current_user=current_user)
     else:
-        return '<a class="button" href="/login">Google Login</a>'
+        return render_template("not_logged.html")
 
 
 @app.route("/login")
@@ -172,14 +159,13 @@ def callback():
 
 def put_entity_to_datastore(b64_hash, email, filename):
     ds = datastore.Client()
-    entity = datastore.Entity(key=ds.key('text_from_images'))
     _, ext = os.path.splitext(filename)
+    entity = datastore.Entity(key=ds.key('text_from_images', b64_hash.decode() + ext))
     print(b64_hash, ext)
     entity.update({
         'email': email,
         'file_name': filename,
-        'hash': b64_hash,
-        'file_name_in_bucket': str(b64_hash) + ext
+        'hash': b64_hash
     })
     ds.put(entity)
     pass
@@ -196,7 +182,6 @@ def upload():
     client = storage.Client()
     bucket = client.get_bucket(UPLOAD_BUCKET)
     b64_hash = getMd5(image).decode()
-    sentinel = object()
     iterEntry = iter(find_in_storage(b64_hash))
     print(iterEntry)
     try:
@@ -223,7 +208,6 @@ def upload():
 def find_in_storage(b64_hash):
     ds = datastore.Client()
     qresult = ds.query(kind="text_from_images").add_filter("hash", "=", b64_hash).fetch()
-    #qresult = ds.query(kind="text_from_images").fetch()
     return qresult
 @app.route("/logout")
 @login_required

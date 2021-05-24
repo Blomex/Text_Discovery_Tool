@@ -34,16 +34,16 @@ def discover_text(data: dict, context):
         text += annotations[0].description
 
     ds = datastore.Client()
-    entityIter = iter(ds.query(kind="text_from_images").add_filter("file_name_in_bucket", "=", file_name).fetch())
+    entity = ds.get(key=ds.key("text_from_images", file_name))
+    print(f"Entity: {entity}, filename: {file_name}")
     try:
-        entity = entityIter.__next__()
         entity.update({
             'text_found': text,
         })
         ds.put(entity)
         print(f"entity {entity} sucesfully updated")
-    except:
-        print("couldn't add discovered text to entity: no such entity found")
+    except Exception as e:
+        print(f"exception: {e}")
     publish_pubsub(file_name, text, email)
 
 def publish_pubsub(file_name, text, email):
