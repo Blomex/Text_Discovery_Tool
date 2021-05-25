@@ -211,8 +211,9 @@ def upload():
         return render_template('sucesfully_added.html')
 
 
-def find_in_storage(b64_hash):
+def find_in_storage(b64_hash, ext):
     ds = datastore.Client()
+    qresult = ds.query(key=ds.key('text_from_images', b64_hash + ext))
     qresult = ds.query(kind="text_from_images").add_filter("hash", "=", b64_hash).fetch()
     return qresult
 
