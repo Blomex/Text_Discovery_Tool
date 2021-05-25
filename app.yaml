@@ -1,8 +1,10 @@
 runtime: python39
 
-#includes:
-#- env_variables.yaml
-
+GOOGLE_CLIENT_ID: %GOOGLE_CLIENT_ID%
+GOOGLE_CLIENT_SECRET: %GOOGLE_CLIENT_SECRET%
+UPLOAD_BUCKET: %UPLOAD_BUCKET%
+PROJECT_ID: %PROJECT_ID%
+SECOND_BUCKET: %SECOND_BUCKET%
 handlers:
 
 - url: /.*
