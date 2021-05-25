@@ -187,14 +187,12 @@ def upload():
     client = storage.Client()
     bucket = client.get_bucket(UPLOAD_BUCKET)
     b64_hash = getMd5(image).decode()
-    iterEntry = iter(find_in_storage(b64_hash))
-    print(iterEntry)
-    try:
-        entry = iterEntry.__next__()
+    _, ext = os.path.splitext(filename)
+    entry = find_in_storage(b64_hash, ext)
+    if entry is not None:
         print("There is already item with such md5 hash in the database")
         return render_template('already_exists.html', entry=entry)
-    except:
-        _, ext = os.path.splitext(filename)
+    else:
         blob = bucket.blob(str(b64_hash) + ext)
         image.seek(0)
         print(blob)
@@ -213,8 +211,7 @@ def upload():
 
 def find_in_storage(b64_hash, ext):
     ds = datastore.Client()
-    qresult = ds.query(key=ds.key('text_from_images', b64_hash + ext))
-    qresult = ds.query(kind="text_from_images").add_filter("hash", "=", b64_hash).fetch()
+    qresult = ds.get(key=ds.key('text_from_images', b64_hash + ext))
     return qresult
 
 
