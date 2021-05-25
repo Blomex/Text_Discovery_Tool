@@ -1,11 +1,15 @@
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 import base64
 import json
-from generate_signed_urls import generate_signed_url
 import os
+
 import google.auth
+from generate_signed_urls import generate_signed_url
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+
 credentials, project = google.auth.default()
+
+
 def send_email(event, context):
     data = json.loads(base64.b64decode(event['data']))['data']
     email = data['email']
@@ -16,7 +20,7 @@ def send_email(event, context):
     original_image_url = generate_signed_url(bucket_name=FIRST_BUCKET, object_name=file_name)
     resized_image_url = generate_signed_url(bucket_name=SECOND_BUCKET, object_name=file_name)
     message = Mail(
-        to_emails = email,
+        to_emails=email,
         from_email="b.jedrychowski@student.uw.edu.pl",
         subject="Text on Image - result",
         html_content=f"""
@@ -33,6 +37,6 @@ def send_email(event, context):
         print(response)
     except Exception as e:
         print(e.message)
-#event = {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': None, 'data': 'eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19'}
+# event = {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': None, 'data': 'eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19'}
 
-#send_email(event, None)
+# send_email(event, None)

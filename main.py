@@ -1,6 +1,4 @@
 import base64
-import json, os
-from flask_wtf.csrf import CSRFProtect
 # MIT License
 #
 # Copyright (c) 2018 Real Python
@@ -23,8 +21,11 @@ from flask_wtf.csrf import CSRFProtect
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import hashlib
-from google.cloud import storage
-from google.cloud import datastore
+import json
+import os
+
+import google.auth
+import requests
 from flask import redirect, request, url_for, Flask, render_template
 from flask_login import (
     LoginManager,
@@ -32,14 +33,16 @@ from flask_login import (
     login_required,
     login_user,
     logout_user,
-    UserMixin,
 )
+from flask_wtf.csrf import CSRFProtect
+from google.cloud import datastore
+from google.cloud import storage
 from oauthlib.oauth2 import WebApplicationClient
-import requests
-import google.auth
+
 credentials, project = google.auth.default()
-#storage_client = storage.Client()
+# storage_client = storage.Client()
 from models.User import User
+
 GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", None)
 GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", None)
 UPLOAD_BUCKET = os.environ.get("UPLOAD_BUCKET", None)
@@ -55,7 +58,7 @@ csrf.init_app(app)
 # https://flask-login.readthedocs.io/en/latest
 login_manager.init_app(app)
 app.config.update(
-    GOOGLE_STORAGE_LOCAL_DEST = app.instance_path,
+    GOOGLE_STORAGE_LOCAL_DEST=app.instance_path,
     GOOGLE_STORAGE_FILES_BUCKET=UPLOAD_BUCKET
 )
 
@@ -64,6 +67,7 @@ app.config.update(
 def load_user(user_id):
     return User.get(user_id)
 
+
 @login_manager.unauthorized_handler
 def unauthorized():
     return "You must be logged in to access this content.", 403
@@ -71,6 +75,7 @@ def unauthorized():
 
 # OAuth2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
+
 
 @app.route("/")
 def index():
@@ -205,25 +210,30 @@ def upload():
         print(f"upload button clicked with form {request.form}")
         return render_template('sucesfully_added.html')
 
+
 def find_in_storage(b64_hash):
     ds = datastore.Client()
     qresult = ds.query(kind="text_from_images").add_filter("hash", "=", b64_hash).fetch()
     return qresult
+
+
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
     return redirect(url_for("index"))
 
+
 def getMd5(f):
     f.seek(0)
     m = hashlib.md5()
     line = f.read()
     m.update(line)
-    custom=b"-_"
+    custom = b"-_"
     md5code = base64.b64encode(m.digest(), altchars=custom)
-    #md5code = m.hexdigest()
+    # md5code = m.hexdigest()
     return md5code
+
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()

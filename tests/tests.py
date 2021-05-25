@@ -1,10 +1,13 @@
-from unittest.mock import MagicMock, patch
-from main import load_user, index, app
-from models.User import User
+from unittest.mock import patch
+
 from flask_testing import TestCase
-#User.get = MagicMock(return_value=mocked_user)
-#current_user = MagicMock()
-#current_user.is_authorized(return_value=True)
+
+from main import load_user, index, app
+
+
+# User.get = MagicMock(return_value=mocked_user)
+# current_user = MagicMock()
+# current_user.is_authorized(return_value=True)
 
 def test_load_user():
     mocked_user = {
@@ -18,15 +21,19 @@ def test_load_user():
         get_mock.return_value = mocked_user
         assert load_user(1) == mocked_user
 
+
 class MyTest(TestCase):
     render_templates = False
+
     def create_app(self):
         return app
+
     def test_logged_user(self):
         with patch('flask_login.utils._get_user') as user_mock:
-                user_mock.return_value.is_authenticated = True
-                index()
-                self.assert_template_used('index.html')
+            user_mock.return_value.is_authenticated = True
+            index()
+            self.assert_template_used('index.html')
+
     def test_not_logged_user(self):
         with patch('flask_login.utils._get_user') as user_mock:
             user_mock.return_value.is_authenticated = False

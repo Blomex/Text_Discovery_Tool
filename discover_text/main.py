@@ -1,12 +1,12 @@
 import os
-from google.cloud import storage, vision
-from google.cloud import datastore, pubsub_v1
 import tempfile
-import io
-storage_client = storage.Client()
-vision_client = vision.ImageAnnotatorClient()
 import json
 
+from google.cloud import datastore, pubsub_v1
+from google.cloud import storage, vision
+
+storage_client = storage.Client()
+vision_client = vision.ImageAnnotatorClient()
 
 def discover_text(data: dict, context):
     """
@@ -46,6 +46,7 @@ def discover_text(data: dict, context):
         print(f"exception: {e}")
     publish_pubsub(file_name, text, email)
 
+
 def publish_pubsub(file_name, text, email):
     topic_name = "new_image"
     publisher = pubsub_v1.PublisherClient()
@@ -68,4 +69,3 @@ def publish_pubsub(file_name, text, email):
     except Exception as e:
         print(e)
         return e, 500
-

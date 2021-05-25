@@ -20,25 +20,27 @@
 For more information, see the README.md under /storage and the documentation
 at https://cloud.google.com/storage/docs/access-control/signing-urls-manually.
 """
-import google.auth
-import argparse
 # [START storage_signed_url_all]
 import binascii
 import collections
 import datetime
 import hashlib
 import sys
-from google.oauth2 import service_account
+
+import google.auth
 # pip install six
 import six
-from six.moves.urllib.parse import quote
-from google.auth.transport import requests
 from google.auth import iam
+from google.auth.transport import requests
+from google.oauth2 import service_account
+from six.moves.urllib.parse import quote
+
 TOKEN_URI = 'https://accounts.google.com/o/oauth2/token'
+
+
 def generate_signed_url(bucket_name, object_name,
                         subresource=None, expiration=604800, http_method='GET',
                         query_parameters=None, headers=None):
-
     if expiration > 604800:
         print('Expiration Time can\'t be longer than 604800 seconds (7 days).')
         sys.exit(1)

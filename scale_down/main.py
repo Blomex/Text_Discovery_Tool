@@ -1,8 +1,9 @@
-import os
-from google.cloud import storage
-import tempfile
-from PIL import Image
 import io
+import os
+import tempfile
+
+from PIL import Image
+from google.cloud import storage
 
 storage_client = storage.Client()
 
@@ -52,7 +53,7 @@ def resize_and_process_image(data: dict, context):
     resized_image.save(fp=temp_local_filename)
     print("Image resized")
 
-    #Upload result to second bucket
+    # Upload result to second bucket
     print("Trying to upload resized image to second bucket")
     second_bucket_name = os.getenv("SECOND_BUCKET")
     second_bucket = storage_client.bucket(second_bucket_name)
