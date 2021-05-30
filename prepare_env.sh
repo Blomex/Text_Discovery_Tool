@@ -5,4 +5,5 @@ echo "  UPLOAD_BUCKET: ${UPLOAD_BUCKET}" >> .env.yaml
 echo "  PROJECT_ID: ${PROJECT_ID}" >> .env.yaml
 echo "  SECOND_BUCKET: ${SECOND_BUCKET}" >> .env.yaml
 echo "  SENDGRID_API_KEY: ${SENDGRID_API_KEY}" >> .env.yaml
+echo "  SECRET_KEY: ${SECRET_KEY}" >> .env.yaml
 echo "" >> .env.yaml
