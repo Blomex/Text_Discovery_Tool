@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Image Text Detector</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index.css')}}">
+
 </head>
 <body>
     <p>Welcome, {{ current_user.id }}! You're logged in! Email: {{ current_user.email }}</p>
@@ -15,4 +17,5 @@
         <input type="submit">
     </form>
 </body>
+
 </html>
