@@ -1,7 +1,6 @@
 import io
 import os
 import tempfile
-
 from PIL import Image
 from google.cloud import storage
 
