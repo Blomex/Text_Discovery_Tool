@@ -9,7 +9,7 @@ storage_client = storage.Client()
 
 def resize_image(image: Image) -> Image:
     """
-    scales down the image to 1024x768, if it's size is bigger than 1024x768
+    scales down the image to 1024x768 or lower, if it's size is bigger than 1024x768
     Otherwise, scales it to 90% of the size.
     1024x768 is the recommended size for the vision API to detect text.
     more information: https://cloud.google.com/vision/docs/supported-files
@@ -20,8 +20,8 @@ def resize_image(image: Image) -> Image:
     if x > expected_x or y > expected_y:
         scale = min(expected_x / x, expected_y / y)
         return image.resize((int(x * scale), int(y * scale)))
-    else:  #
-        return image
+    else:
+        return image.resize((int(0.9*x), int(0.9*y)))
 
 
 def resize_and_process_image(data: dict, context):

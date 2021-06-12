@@ -180,7 +180,6 @@ def put_entity_to_datastore(b64_hash, email, filename):
 @app.route("/upload", methods=['POST'])
 @login_required
 def upload():
-    print(f"secret key: {app.secret_key}")
     # retrieve data from form
     email = request.form['email']
     image = request.files['filename']
