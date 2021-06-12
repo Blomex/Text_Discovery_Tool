@@ -197,6 +197,25 @@ PATH_TO_DIRECTORY: send_email
 
 #### Running Tests
 to run tests, you need to have following variables in your environment:
-GOOGLE_APPLICATION_CREDENTIALS - path to json file with google application credentials
+GOOGLE_APPLICATION_CREDENTIALS - path to json file with google application credentials.
+
+to run tests, make sure you are in repo root directory, and that environmental variable with google application credentials is set.
+
+Then, you need to create test environment:
+
+```python -m venv test_env```
+
+activate the environment:
+
+`source test_env/bin/activate`
+
+install requirements to run tests:
+
+`pip install -r ./tests/requirements.txt`
+
+and finally, run the tests:
+
+`python -m pytest run ./tests/tests.py`
+
 
 ##

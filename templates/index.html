@@ -7,7 +7,7 @@
 
 </head>
 <body>
-    <p>Welcome, {{ current_user.id }}! You're logged in! Email: {{ current_user.email }}</p>
+    <p>Welcome, {{ current_user.email }}! You're logged in! </p>
     <a class="button" href="/logout">Logout</a>
 
     <form action="/upload" method="POST" enctype="multipart/form-data">
