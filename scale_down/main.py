@@ -38,16 +38,13 @@ def resize_and_process_image(data: dict, context):
     file_name = data["name"]
     bucket_name = data["bucket"]
     _, temp_local_filename = tempfile.mkstemp(suffix=file_name)
-    print(f"temp_local_filename: {temp_local_filename}")
     blob = storage_client.bucket(bucket_name).get_blob(file_name)
-    blob_uri = f"gs://{bucket_name}/{file_name}"
-    print(f"blob uri: {blob_uri}")
     blob_bytes = blob.download_as_bytes()
-    print(f"blob bytes: {blob_bytes}")
     output = io.BytesIO(blob_bytes)
     output.seek(0)
     image = Image.open(output)
-    print("Trying to resize image")
+    print("trying to resize image")
+    # resizes image
     resized_image = resize_image(image)
     resized_image.save(fp=temp_local_filename)
     print("Image resized")
@@ -61,5 +58,5 @@ def resize_and_process_image(data: dict, context):
     new_blob.metadata = blob.metadata
     print("created new blob")
     new_blob.upload_from_filename(temp_local_filename)
-    print("uploaded from file")
+    print("uploaded resized image from file")
     os.remove(temp_local_filename)

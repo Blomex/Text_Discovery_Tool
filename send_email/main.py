@@ -11,14 +11,27 @@ credentials, project = google.auth.default()
 
 
 def send_email(event, context):
+    """
+    Background Cloud Function to be triggered by Cloud Pub/Sub, which retrieves user email,
+    image name and discovered text from the Pub/Sub, generates signed urls for the image
+    and then sends email with signed urls and text discovered on the image
+
+    :param event: dictionary with field 'data', which is encoded in base64 and contains dictionary with fields
+    such as email, file name and message (message is the text discovered in the image)
+    :param context: Metadata of triggering event
+    :return: None
+    """
+    # retrieves data from Pub/Sub
     data = json.loads(base64.b64decode(event['data']))['data']
     email = data['email']
     file_name = data['file_name']
     discovered_text = data['message']
     FIRST_BUCKET = os.getenv("UPLOAD_BUCKET")
     SECOND_BUCKET = os.getenv("SECOND_BUCKET")
+    # generates signed urls for images
     original_image_url = generate_signed_url(bucket_name=FIRST_BUCKET, object_name=file_name)
     resized_image_url = generate_signed_url(bucket_name=SECOND_BUCKET, object_name=file_name)
+    # sends email
     message = Mail(
         to_emails=email,
         from_email="b.jedrychowski@student.uw.edu.pl",
@@ -37,6 +50,3 @@ def send_email(event, context):
         print(response)
     except Exception as e:
         print(e.message)
-# event = {'@type': 'type.googleapis.com/google.pubsub.v1.PubsubMessage', 'attributes': None, 'data': 'eyJkYXRhIjogeyJmaWxlX25hbWUiOiAicG9icmFuZS5qcGciLCAibWVzc2FnZSI6ICJZb3VyIGRlc2lnblxuQURWRU5UVVJFXG5PIFNpbmNlIDIwMDhcbiIsICJlbWFpbCI6ICIgYmxvbWV4LmJsb29tZXhAZ21haWwuY29tIn19'}
-
-# send_email(event, None)
