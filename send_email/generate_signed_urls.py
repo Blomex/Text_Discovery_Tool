@@ -134,31 +134,3 @@ def generate_signed_url(bucket_name, object_name,
     return signed_url
 # [END storage_signed_url_all]
 
-
-# if __name__ == '__main__':
-#     parser = argparse.ArgumentParser(
-#         description=__doc__,
-#         formatter_class=argparse.RawDescriptionHelpFormatter)
-#     parser.add_argument(
-#         'service_account_file',
-#         help='Path to your Google service account keyfile.')
-#     parser.add_argument(
-#         'request_method',
-#         help='A request method, e.g GET, POST.')
-#     parser.add_argument('bucket_name', help='Your Cloud Storage bucket name.')
-#     parser.add_argument('object_name', help='Your Cloud Storage object name.')
-#     parser.add_argument('expiration', type=int, help='Expiration time.')
-#     parser.add_argument(
-#         '--subresource',
-#         default=None,
-#         help='Subresource of the specified resource, e.g. "acl".')
-#
-#     args = parser.parse_args()
-#
-#     signed_url = generate_signed_url(
-#         service_account_file=args.service_account_file,
-#         http_method=args.request_method, bucket_name=args.bucket_name,
-#         object_name=args.object_name, subresource=args.subresource,
-#         expiration=int(args.expiration))
-#
-#     print(signed_url)
