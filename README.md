@@ -17,7 +17,7 @@ Once one presses "Logout", One is navigated back to login/initial page, where th
 button that one can use to log back into the system.
 
 
-##Installation
+## Installation
 
 
 ### Using single build trigger in empty GCP project
