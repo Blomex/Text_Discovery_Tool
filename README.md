@@ -2,7 +2,7 @@
 
 ## Short Description
 App allows users to discover what text is available on the image.
-This could be useful 
+This could be useful when someone has screenshots of documents, that have a lot of text. This way, instead of rewriting everything, one can just use this tool.
 ## Description
 App realizes following user flow:
 1. User can navigate to a website, where he can use his Google account to log in into the system.
